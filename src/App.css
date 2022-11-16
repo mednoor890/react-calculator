@@ -1,0 +1,22 @@
+.App {
+  
+   display:flex;
+   justify-content:center;
+    align-items:center;
+    background-color: aqua;
+  margin-top:5%;
+  margin-left:35%;
+  height: 500px;
+  width: 350px; 
+}
+.btns
+{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 2fr;
+  height: 500px;
+  width: 350px;
+  padding: 8px;
+  background-color: white;
+  
+}
+
