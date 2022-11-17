@@ -68,9 +68,22 @@ export class App extends Component {
     super(props)
   
     this.state = {
-       input:0
+       input:0,
+       operator:"",
+       result:0,
+       isDec:false
     }
   this.clear=this.clear.bind(this)
+  this.handleClick=this.handleClick.bind(this)
+
+  }
+  handleClickOperation(e)
+  {
+    this.setState({operator:e.target.value})
+  }
+  handleClick(e)
+  {
+ this.setState({input:e.target.value})
   }
   clear()
   {
@@ -86,12 +99,12 @@ export class App extends Component {
     <div className="App">
   
     <div className="btns">  
-    <button id="equals">=</button>
-     {numbers.map(x=><button key={x.id}   id={x.id}>{x.number}</button>)}
-    {op.map(y=><button key={y.id} id={y.id}>{y.operator}</button>)}
+     {op.map(y=><button key={y.id}  value={y.operator} id={y.id}>{y.operator}</button>)}
+     {numbers.map(x=><button key={x.id} onClick={this.handleClick} value={x.number}  id={x.id}>{x.number}</button>)}
+           
     <button id="decimal">.</button>
     <button id="clear" onClick={this.clear}>Clear</button>
-  
+  <button id="equals">=</button>
     <div id="display">{this.state.input}</div>
     </div>
     </div>
