@@ -68,26 +68,41 @@ export class App extends Component {
     super(props)
   
     this.state = {
-       input:0,
-       operator:"",
-       result:0,
+       input:"0",
+      
        isDec:false
     }
   this.clear=this.clear.bind(this)
   this.handleClick=this.handleClick.bind(this)
+  this.calculate=this.calculate.bind(this)
+  this.handleDecimal=this.handleDecimal.bind(this)
+  }
 
-  }
-  handleClickOperation(e)
-  {
-    this.setState({operator:e.target.value})
-  }
   handleClick(e)
   {
- this.setState({input:e.target.value})
+    if(this.state.input==="0")
+    {this.setState({input:e.target.textContent})}
+ else {
+  this.setState({input:this.state.input+(e.target.textContent)})
+ }
   }
   clear()
   {
-    this.setState({input:0})
+    this.setState({input:"0"})
+  }
+  calculate()
+  {
+    this.setState({input:eval(this.state.input)})
+    
+  }
+  handleDecimal()
+  {
+    const arr=this.state.input.split(" ")
+    const lastElement = arr[arr.length - 1]
+    if (!lastElement.includes('.') )
+    {
+      this.setState({input:this.state.input + '.'})
+    }
   }
   render() {
     return (
@@ -99,13 +114,13 @@ export class App extends Component {
     <div className="App">
   
     <div className="btns">  
-     {op.map(y=><button key={y.id}  value={y.operator} id={y.id}>{y.operator}</button>)}
+     {op.map(y=><button key={y.id} onClick={this.handleClick} value={y.operator} id={y.id}>{y.operator}</button>)}
      {numbers.map(x=><button key={x.id} onClick={this.handleClick} value={x.number}  id={x.id}>{x.number}</button>)}
            
-    <button id="decimal">.</button>
+    <button id="decimal" onClick={this.handleDecimal}>.</button>
     <button id="clear" onClick={this.clear}>Clear</button>
-  <button id="equals">=</button>
-    <div id="display">{this.state.input}</div>
+  <button id="equals" onClick={this.calculate}>=</button>
+    <div id="display" >{this.state.input} </div>
     </div>
     </div>
 
