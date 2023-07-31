@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
+import * as math from 'mathjs';
 import "./App.css"
 const numbers=[
   {
@@ -61,73 +62,101 @@ const op=
     id:"divide"
   }
 ]
+export default function App() {
+  const [input, setInput] = useState("0");
+  const [lastClicked, setLastClicked] = useState('');
 
-
-export class App extends Component {
-  constructor(props) {
-    super(props)
-  
-    this.state = {
-       input:"0",
-      
-       isDec:false
+  const handleDigitInput = (value) => {
+    // Check if input starts with 0
+    if (input === '0') {
+      setInput(value);
+    } else {
+      setInput((prevInput) => prevInput + value);
     }
-  this.clear=this.clear.bind(this)
-  this.handleClick=this.handleClick.bind(this)
-  this.calculate=this.calculate.bind(this)
-  this.handleDecimal=this.handleDecimal.bind(this)
-  }
+  };
 
-  handleClick(e)
-  {
-    if(this.state.input==="0")
-    {this.setState({input:e.target.textContent})}
- else {
-  this.setState({input:this.state.input+(e.target.textContent)})
- }
-  }
-  clear()
-  {
-    this.setState({input:"0"})
-  }
-  calculate()
-  {
-    this.setState({input:eval(this.state.input)})
-    
-  }
-  handleDecimal()
-  {
-    const arr=this.state.input.split(" ")
-    const lastElement = arr[arr.length - 1]
-    if (!lastElement.includes('.') )
-    {
-      this.setState({input:this.state.input + '.'})
-    }
-  }
-  render() {
-    return (
-      <>
-
-
+  const handleDecimal = () => {
+    // Check if input already contains a decimal point in the current number
+    const lastOperatorIndex = input
+      .split('')
+      .reverse()
+      .findIndex((char) => op.some((operator) => operator.operator === char));
   
-    
+    const currentNumber =
+      lastOperatorIndex === -1
+        ? input
+        : input.slice(input.length - lastOperatorIndex);
+  
+    if (!currentNumber.includes('.')) {
+      setInput((prevInput) => prevInput + '.');
+    }
+  };
+  
+
+  const clear = () => {
+    setInput('0');
+  };
+
+  const calculate = () => {
+    try {
+      const result = math.evaluate(input);
+      setInput(result.toString());
+    } catch (error) {
+      setInput('Error');
+      console.error(error);
+    }
+  };
+
+  const handleClick = (e) => {
+    const value = e.target.value;
+  
+    // Handle operators
+    if (op.some((operator) => operator.operator === value)) {
+      // Check for consecutive operators (excluding negative sign)
+      const lastChar = input.slice(-1);
+      if (
+        lastChar !== '-' &&
+        op.some((op) => op.operator === lastChar) &&
+        value !== '-'
+      ) {
+        setInput((prevInput) => prevInput.slice(0, -1) + value);
+      } else {
+        setInput((prevInput) => prevInput + value);
+      }
+    }
+    // Handle digits
+    else if (!isNaN(value) || value === '.') {
+      handleDigitInput(value);
+    }
+  
+    setLastClicked(value);
+  };
+  
+  
+  return (
     <div className="App">
-  
-    <div className="btns">  
-     {op.map(y=><button key={y.id} onClick={this.handleClick} value={y.operator} id={y.id}>{y.operator}</button>)}
-     {numbers.map(x=><button key={x.id} onClick={this.handleClick} value={x.number}  id={x.id}>{x.number}</button>)}
-           
-    <button id="decimal" onClick={this.handleDecimal}>.</button>
-    <button id="clear" onClick={this.clear}>Clear</button>
-  <button id="equals" onClick={this.calculate}>=</button>
-    <div id="display" >{this.state.input} </div>
+      <div className="btns">
+        {op.map(y => (
+          <button key={y.id} onClick={handleClick} value={y.operator} id={y.id}>
+            {y.operator}
+          </button>
+        ))}
+        {numbers.map(x => (
+          <button key={x.id} onClick={handleClick} value={x.number} id={x.id}>
+            {x.number}
+          </button>
+        ))}
+        <button id="decimal" onClick={handleDecimal}>
+          .
+        </button>
+        <button id="clear" onClick={clear}>
+          Clear
+        </button>
+        <button id="equals" onClick={calculate}>
+          =
+        </button>
+        <div id="display">{input}</div>
+      </div>
     </div>
-    </div>
-
-
-      </>
-    )
-  }
+  );
 }
-
-export default App
